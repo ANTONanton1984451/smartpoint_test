@@ -1,0 +1,17 @@
+body{
+    padding: 5px;
+}
+span{
+    font-weight: bold;
+}
+.wrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-self: center;
+    align-items: center;
+    height: 30vh;
+}
+.hello{
+    display: none;
+}

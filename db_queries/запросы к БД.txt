@@ -1,0 +1,52 @@
+1.SELECT `teams`.`name` as team,`mountains`.`name` as mountain FROM climblog 
+INNER JOIN `teams`ON `climblog`.`team`=`teams`.`id`
+INNER JOIN `mountains`ON `climblog`.`mountain`=`mountains`.`id` ORDER BY mountain,`climblog`.`start`
+
+2.INSERT INTO `mountains`(`name`,`height`,`country`,`area`) VALUES ("название",высота,"страна","район")
+
+3.тут не знаю как проверить "посещаемость" SQL-запросом,поэтому сделал бы так:
+
+$pdo=new PDO(/*мои данные*/);
+
+$stmt = $pdo->prepare('SELECT * FROM `climblog` WHERE `mountain`=?');//сначала находим есть ли какие либо данные о восхождении 
+//данной горы
+
+$result= $stmt->execute([$mountainId]);
+
+if(empty($result)){//если ничего нет,то мен€ем их
+
+  $st=$pdo->prepare('UPDATE `mountains` SET `height`=? WHERE `id`=?');
+
+  $st->execute([1000,$mountainId]);
+
+}
+4.SELECT `mountaineers`.`name` AS name ,`teams`.`name` as team FROM `climblog` 
+INNER JOIN `teams` ON `climblog`.`team`=`teams`.`id` 
+INNER JOIN `mountaineers` ON `mountaineers`.`team`=`teams`.`id` 
+WHERE `climblog`.`start` BETWEEN "дата1" AND "дата2" ORDER BY `climblog`.`start`
+
+5.INSERT INTO `mountaineers`(`team`,`name`,`adress`) VALUES (1,"јндрей","ћосква")
+
+6.SELECT `mountains`.`name`,COUNT(`mountaineers`.`id`) as quantity FROM `climblog`
+INNER JOIN `mountains` ON `mountains`.`id`=`climblog`.`mountain`
+INNER JOIN `teams` ON `teams`.`id`=`climblog`.`team`
+INNER JOIN `mountaineers` ON `mountaineers`.`team`=`teams`.`id`
+GROUP BY `mountains`.`name`
+
+7.SELECT `teams`.`name`,`climblog`.`start`,`climblog`.`end` FROM `climblog` 
+INNER JOIN `teams` ON`climblog`.`team`=`teams`.`id`
+WHERE `climblog`.`start`> "дата начала" AND `climblog`.`end` <"дата конца" ORDER BY `climblog`.`start` DESC
+
+8.“.к. объединение всех указанных в этом запросе полей нарушало бы нормальную форму таблицы,то лучше сделать два запроса:
+8.1 —начала записать в таблицу групп саму группу
+INSERT INTO `teams`(`name`) VALUES ("название группы");
+8.2 «атем с помошью PDO::lastInsertId получить айди группы($groupId)
+и записать эти данные в журнал восхождений:
+INSERT INTO `climblog`(`mountain`,`team`,`start`,`end`) VALUES("название горы","$groupId","дата начала","дата конца")
+
+9.SELECT `mountains`.`name`,COUNT(`mountaineers`.`id`) as quantity FROM `climblog`
+INNER JOIN `mountains` ON `mountains`.`id`=`climblog`.`mountain`
+RIGHT JOIN `teams` ON `teams`.`id`=`climblog`.`team`
+RIGHT JOIN `mountaineers` ON `mountaineers`.`team`=`teams`.`id`
+GROUP BY `mountains`.`name`
+        
